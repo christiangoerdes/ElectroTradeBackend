@@ -46,7 +46,7 @@ public class AuthService {
     return new ResponseEntity<>(
             AuthResponse.builder().accessToken(jwtToken).name(user.getName()).build(),
             responseHeaders,
-            HttpStatus.OK
+            HttpStatus.CREATED
     );
   }
   private UserEntity createUser(RegisterRequest request, Role role) {
@@ -77,7 +77,7 @@ public class AuthService {
     return new ResponseEntity<>(
             AuthResponse.builder().accessToken(jwtToken).name(user.getName()).build(),
             responseHeaders ,
-            HttpStatus.OK
+            HttpStatus.CREATED
     );
   }
 
