@@ -24,14 +24,14 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthService {
   private final UserRepo userRepo;
   private final TokenRepo tokenRepo;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public ResponseEntity<AuthenticationResponse> register(RegisterRequest request, Role role) {
+  public ResponseEntity<AuthResponse> register(RegisterRequest request, Role role) {
     UserEntity user = createUser(request, role);
     var jwtToken = jwtService.generateToken(user);
     saveUserToken(userRepo.save(user), jwtToken);
@@ -40,7 +40,7 @@ public class AuthenticationService {
     responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
 
     return new ResponseEntity<>(
-            AuthenticationResponse.builder().accessToken(jwtToken).build(),
+            AuthResponse.builder().accessToken(jwtToken).build(),
             responseHeaders,
             HttpStatus.OK
     );
@@ -54,7 +54,7 @@ public class AuthenticationService {
             .build();
   }
 
-  public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest request) {
+  public ResponseEntity<AuthResponse> authenticate(AuthRequest request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
@@ -71,7 +71,7 @@ public class AuthenticationService {
     responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
 
     return new ResponseEntity<>(
-            AuthenticationResponse.builder().accessToken(jwtToken).build(),
+            AuthResponse.builder().accessToken(jwtToken).build(),
             responseHeaders ,
             HttpStatus.OK
     );
@@ -102,7 +102,6 @@ public class AuthenticationService {
   public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     String refreshToken = getRefreshToken(request);
-    refreshToken = getRefreshToken(request);
     if(refreshToken == null) {
       return;
     }
@@ -113,7 +112,7 @@ public class AuthenticationService {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
-        var authResponse = AuthenticationResponse.builder()
+        var authResponse = AuthResponse.builder()
                 .accessToken(accessToken)
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);

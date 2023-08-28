@@ -1,6 +1,6 @@
 package com.goerdes.security;
 
-import com.goerdes.security.auth.AuthenticationService;
+import com.goerdes.security.auth.AuthService;
 import com.goerdes.security.auth.RegisterRequest;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +19,7 @@ public class SecurityApplication {
 
 	@Bean
 	public CommandLineRunner commandLineRunner(
-			AuthenticationService service
+			AuthService service
 	) {
 		return args -> {
 			var admin = RegisterRequest.builder()
