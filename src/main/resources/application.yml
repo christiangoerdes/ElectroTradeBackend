@@ -8,6 +8,8 @@ spring:
     username: sa
     password:
     driverClassName: org.h2.Driver
+  allowed:
+    resources: /h2-console/**
 
 application:
   security:
@@ -16,5 +18,3 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
-allowed:
-  resources: /h2-console/**
