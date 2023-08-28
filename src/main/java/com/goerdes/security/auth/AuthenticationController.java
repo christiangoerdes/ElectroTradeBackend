@@ -4,6 +4,8 @@ import com.goerdes.security.user.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +25,14 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> register(
       @RequestBody RegisterRequest request
   ) {
-    return ResponseEntity.ok(service.register(request, Role.USER));
+    HttpHeaders responseHeaders = new HttpHeaders();
+    return new ResponseEntity<AuthenticationResponse>(service.register(request, Role.USER), responseHeaders, HttpStatus.OK);
   }
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {
-    return ResponseEntity.ok(service.authenticate(request));
+    return service.authenticate(request);
   }
 
   @PostMapping("/refresh-token")

@@ -12,12 +12,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +40,6 @@ public class AuthenticationService {
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)
-        .refreshToken(refreshToken)
         .build();
   }
   public UserEntity createUser(RegisterRequest request, Role role) {
@@ -48,23 +51,25 @@ public class AuthenticationService {
             .build();
   }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+  public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
             request.getPassword()
         )
     );
+
     var user = repository.findByEmail(request.getEmail())
         .orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
-    return AuthenticationResponse.builder()
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.add("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/");
+    return new ResponseEntity<>(AuthenticationResponse.builder()
         .accessToken(jwtToken)
-            .refreshToken(refreshToken)
-        .build();
+        .build(), responseHeaders , HttpStatus.OK);
   }
 
   private void saveUserToken(UserEntity userEntity, String jwtToken) {
@@ -110,7 +115,6 @@ public class AuthenticationService {
         saveUserToken(user, accessToken);
         var authResponse = AuthenticationResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
