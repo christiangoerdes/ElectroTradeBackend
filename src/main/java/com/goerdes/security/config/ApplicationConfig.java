@@ -1,6 +1,6 @@
 package com.goerdes.security.config;
 
-import com.goerdes.security.user.UserRepository;
+import com.goerdes.security.user.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-  private final UserRepository repository;
+  private final UserRepo repository;
 
   @Bean
   public UserDetailsService userDetailsService() {

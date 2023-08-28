@@ -28,10 +28,10 @@ public class UserEntity implements UserDetails {
   @Id
   @GeneratedValue
   private Integer id;
-  private String firstname;
-  private String lastname;
+  private String name;
   private String email;
   private String password;
+  private Double balance;
 
   @Enumerated(EnumType.STRING)
   private Role role;
@@ -49,7 +49,6 @@ public class UserEntity implements UserDetails {
     return password;
   }
 
-  @Override
   public String getUsername() {
     return email;
   }

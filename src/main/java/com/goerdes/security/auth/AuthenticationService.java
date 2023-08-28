@@ -2,10 +2,10 @@ package com.goerdes.security.auth;
 
 import com.goerdes.security.config.JwtService;
 import com.goerdes.security.token.Token;
-import com.goerdes.security.token.TokenRepository;
+import com.goerdes.security.token.TokenRepo;
 import com.goerdes.security.token.TokenType;
 import com.goerdes.security.user.UserEntity;
-import com.goerdes.security.user.UserRepository;
+import com.goerdes.security.user.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,16 +21,15 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-  private final UserRepository repository;
-  private final TokenRepository tokenRepository;
+  private final UserRepo repository;
+  private final TokenRepo tokenRepo;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = UserEntity.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
+        .name(request.getName())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
@@ -72,18 +71,18 @@ public class AuthenticationService {
         .expired(false)
         .revoked(false)
         .build();
-    tokenRepository.save(token);
+    tokenRepo.save(token);
   }
 
   private void revokeAllUserTokens(UserEntity userEntity) {
-    var validUserTokens = tokenRepository.findAllValidTokenByUser(userEntity.getId());
+    var validUserTokens = tokenRepo.findAllValidTokenByUser(userEntity.getId());
     if (validUserTokens.isEmpty())
       return;
     validUserTokens.forEach(token -> {
       token.setExpired(true);
       token.setRevoked(true);
     });
-    tokenRepository.saveAll(validUserTokens);
+    tokenRepo.saveAll(validUserTokens);
   }
 
   public void refreshToken(
