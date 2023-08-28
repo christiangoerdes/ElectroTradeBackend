@@ -4,6 +4,7 @@ import com.goerdes.security.config.JwtService;
 import com.goerdes.security.token.Token;
 import com.goerdes.security.token.TokenRepo;
 import com.goerdes.security.token.TokenType;
+import com.goerdes.security.user.Role;
 import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,21 +28,24 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
-    var user = UserEntity.builder()
-        .name(request.getName())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
-        .build();
+  public AuthenticationResponse register(RegisterRequest request, Role role) {
+    UserEntity user = createUser(request, role);
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)
-            .refreshToken(refreshToken)
+        .refreshToken(refreshToken)
         .build();
+  }
+  public UserEntity createUser(RegisterRequest request, Role role) {
+    return UserEntity.builder()
+            .name(request.getName())
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(role)
+            .build();
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
