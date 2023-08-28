@@ -25,8 +25,7 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> register(
       @RequestBody RegisterRequest request
   ) {
-    HttpHeaders responseHeaders = new HttpHeaders();
-    return new ResponseEntity<AuthenticationResponse>(service.register(request, Role.USER), responseHeaders, HttpStatus.OK);
+    return service.register(request, Role.USER);
   }
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(

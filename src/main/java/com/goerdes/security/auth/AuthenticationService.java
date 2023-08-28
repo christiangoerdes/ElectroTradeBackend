@@ -32,15 +32,16 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request, Role role) {
+  public ResponseEntity<AuthenticationResponse> register(RegisterRequest request, Role role) {
     UserEntity user = createUser(request, role);
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
-    return AuthenticationResponse.builder()
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
+    return new ResponseEntity<AuthenticationResponse>(AuthenticationResponse.builder()
         .accessToken(jwtToken)
-        .build();
+        .build(), responseHeaders , HttpStatus.OK);
   }
   public UserEntity createUser(RegisterRequest request, Role role) {
     return UserEntity.builder()
@@ -58,15 +59,13 @@ public class AuthenticationService {
             request.getPassword()
         )
     );
-
     var user = repository.findByEmail(request.getEmail())
         .orElseThrow();
     var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.add("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/");
+    responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
     return new ResponseEntity<>(AuthenticationResponse.builder()
         .accessToken(jwtToken)
         .build(), responseHeaders , HttpStatus.OK);
