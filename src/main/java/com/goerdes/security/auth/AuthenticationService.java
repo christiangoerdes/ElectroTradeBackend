@@ -8,6 +8,7 @@ import com.goerdes.security.user.Role;
 import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -98,21 +99,24 @@ public class AuthenticationService {
     tokenRepo.saveAll(validUserTokens);
   }
 
-  public void refreshToken(
-          HttpServletRequest request,
-          HttpServletResponse response
-  ) throws IOException {
-    final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    final String refreshToken;
-    final String userEmail;
-    if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+  public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Cookie[] cookies = request.getCookies();
+    String refreshToken = null;
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("refreshToken".equals(cookie.getName())) {
+          refreshToken = cookie.getValue();
+          break;
+        }
+      }
+    }
+    if(refreshToken == null) {
       return;
     }
-    refreshToken = authHeader.substring(7);
-    userEmail = jwtService.extractUsername(refreshToken);
+    final String userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
-      var user = this.userRepo.findByEmail(userEmail)
-              .orElseThrow();
+      System.out.println(userEmail);
+      var user = this.userRepo.findByEmail(userEmail).orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);

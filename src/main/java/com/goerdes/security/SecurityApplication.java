@@ -27,12 +27,15 @@ public class SecurityApplication {
 					.email("admin@mail.com")
 					.password("password")
 					.build();
+			service.register(admin, ADMIN);
 
 			var manager = RegisterRequest.builder()
 					.name("Admin")
 					.email("manager@mail.com")
 					.password("password")
 					.build();
+			service.register(manager, MANAGER);
+
 		};
 	}
 }
