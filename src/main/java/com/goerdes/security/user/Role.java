@@ -28,7 +28,8 @@ public enum Role {
                   MANAGER_READ,
                   MANAGER_UPDATE,
                   MANAGER_DELETE,
-                  MANAGER_CREATE
+                  MANAGER_CREATE,
+                  USER_READ
           )
   ),
   MANAGER(
@@ -36,7 +37,8 @@ public enum Role {
                   MANAGER_READ,
                   MANAGER_UPDATE,
                   MANAGER_DELETE,
-                  MANAGER_CREATE
+                  MANAGER_CREATE,
+                  USER_READ
           )
   )
 

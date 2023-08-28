@@ -22,8 +22,7 @@ import static com.goerdes.security.user.Permission.MANAGER_CREATE;
 import static com.goerdes.security.user.Permission.MANAGER_DELETE;
 import static com.goerdes.security.user.Permission.MANAGER_READ;
 import static com.goerdes.security.user.Permission.MANAGER_UPDATE;
-import static com.goerdes.security.user.Role.ADMIN;
-import static com.goerdes.security.user.Role.MANAGER;
+import static com.goerdes.security.user.Role.*;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -66,9 +65,8 @@ public class SecurityConfiguration {
                 "/webjars/**",
                 "/swagger-ui.html"
         )
-          .permitAll()
-
-
+        .permitAll()
+        .requestMatchers("/user/data/**").hasAnyRole(USER.name())
         .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
 
 
