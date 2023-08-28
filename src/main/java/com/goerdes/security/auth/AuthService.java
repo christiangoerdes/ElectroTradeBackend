@@ -8,6 +8,7 @@ import com.goerdes.security.user.Role;
 import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,6 +35,9 @@ public class AuthService {
   public ResponseEntity<AuthResponse> register(RegisterRequest request, Role role) {
     UserEntity user = createUser(request, role);
     var jwtToken = jwtService.generateToken(user);
+    if(userRepo.findByEmail(request.getEmail()).isPresent()) {
+      throw new EntityExistsException();
+    }
     saveUserToken(userRepo.save(user), jwtToken);
 
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -45,7 +49,7 @@ public class AuthService {
             HttpStatus.OK
     );
   }
-  public UserEntity createUser(RegisterRequest request, Role role) {
+  private UserEntity createUser(RegisterRequest request, Role role) {
     return UserEntity.builder()
             .name(request.getName())
             .email(request.getEmail())
