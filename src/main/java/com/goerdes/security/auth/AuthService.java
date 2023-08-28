@@ -44,7 +44,7 @@ public class AuthService {
     responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
 
     return new ResponseEntity<>(
-            AuthResponse.builder().accessToken(jwtToken).build(),
+            AuthResponse.builder().accessToken(jwtToken).name(user.getName()).build(),
             responseHeaders,
             HttpStatus.OK
     );
@@ -75,7 +75,7 @@ public class AuthService {
     responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
 
     return new ResponseEntity<>(
-            AuthResponse.builder().accessToken(jwtToken).build(),
+            AuthResponse.builder().accessToken(jwtToken).name(user.getName()).build(),
             responseHeaders ,
             HttpStatus.OK
     );
