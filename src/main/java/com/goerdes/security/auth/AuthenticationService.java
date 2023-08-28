@@ -21,12 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-  private final UserRepo repository;
+  private final UserRepo userRepo;
   private final TokenRepo tokenRepo;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
@@ -34,14 +32,17 @@ public class AuthenticationService {
 
   public ResponseEntity<AuthenticationResponse> register(RegisterRequest request, Role role) {
     UserEntity user = createUser(request, role);
-    var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);
-    saveUserToken(savedUser, jwtToken);
+    saveUserToken(userRepo.save(user), jwtToken);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
-    return new ResponseEntity<AuthenticationResponse>(AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-        .build(), responseHeaders , HttpStatus.OK);
+
+    return new ResponseEntity<>(
+            AuthenticationResponse.builder().accessToken(jwtToken).build(),
+            responseHeaders,
+            HttpStatus.OK
+    );
   }
   public UserEntity createUser(RegisterRequest request, Role role) {
     return UserEntity.builder()
@@ -59,16 +60,20 @@ public class AuthenticationService {
             request.getPassword()
         )
     );
-    var user = repository.findByEmail(request.getEmail())
-        .orElseThrow();
+    var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
     var jwtToken = jwtService.generateToken(user);
+
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
-    return new ResponseEntity<>(AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-        .build(), responseHeaders , HttpStatus.OK);
+
+    return new ResponseEntity<>(
+            AuthenticationResponse.builder().accessToken(jwtToken).build(),
+            responseHeaders ,
+            HttpStatus.OK
+    );
   }
 
   private void saveUserToken(UserEntity userEntity, String jwtToken) {
@@ -106,7 +111,7 @@ public class AuthenticationService {
     refreshToken = authHeader.substring(7);
     userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
-      var user = this.repository.findByEmail(userEmail)
+      var user = this.userRepo.findByEmail(userEmail)
               .orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
