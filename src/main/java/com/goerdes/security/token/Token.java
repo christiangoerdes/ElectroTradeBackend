@@ -1,6 +1,6 @@
 package com.goerdes.security.token;
 
-import com.goerdes.security.user.User;
+import com.goerdes.security.user.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,5 +38,5 @@ public class Token {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  public User user;
+  public UserEntity userEntity;
 }

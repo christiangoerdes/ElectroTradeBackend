@@ -4,7 +4,7 @@ import com.goerdes.security.config.JwtService;
 import com.goerdes.security.token.Token;
 import com.goerdes.security.token.TokenRepository;
 import com.goerdes.security.token.TokenType;
-import com.goerdes.security.user.User;
+import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
-    var user = User.builder()
+    var user = UserEntity.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
         .email(request.getEmail())
@@ -64,9 +64,9 @@ public class AuthenticationService {
         .build();
   }
 
-  private void saveUserToken(User user, String jwtToken) {
+  private void saveUserToken(UserEntity userEntity, String jwtToken) {
     var token = Token.builder()
-        .user(user)
+        .userEntity(userEntity)
         .token(jwtToken)
         .tokenType(TokenType.BEARER)
         .expired(false)
@@ -75,8 +75,8 @@ public class AuthenticationService {
     tokenRepository.save(token);
   }
 
-  private void revokeAllUserTokens(User user) {
-    var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+  private void revokeAllUserTokens(UserEntity userEntity) {
+    var validUserTokens = tokenRepository.findAllValidTokenByUser(userEntity.getId());
     if (validUserTokens.isEmpty())
       return;
     validUserTokens.forEach(token -> {
