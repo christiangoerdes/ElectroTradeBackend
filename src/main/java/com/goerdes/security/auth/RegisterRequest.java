@@ -1,6 +1,6 @@
-package com.alibou.security.auth;
+package com.goerdes.security.auth;
 
-import com.alibou.security.user.Role;
+import com.goerdes.security.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
