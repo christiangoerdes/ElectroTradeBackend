@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                 "/h2",
                 "/h2/**",
                 "/console/",
-                "/console/**",      //TODO TEMP! remove for security.
+                "/console/**",
                 "/h2-console",
                 "/h2-console/**",
                 "/api/v1/auth/**",
