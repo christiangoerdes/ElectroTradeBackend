@@ -100,22 +100,14 @@ public class AuthenticationService {
   }
 
   public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Cookie[] cookies = request.getCookies();
-    String refreshToken = null;
-    if (cookies != null) {
-      for (Cookie cookie : cookies) {
-        if ("refreshToken".equals(cookie.getName())) {
-          refreshToken = cookie.getValue();
-          break;
-        }
-      }
-    }
+
+    String refreshToken = getRefreshToken(request);
+    refreshToken = getRefreshToken(request);
     if(refreshToken == null) {
       return;
     }
     final String userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
-      System.out.println(userEmail);
       var user = this.userRepo.findByEmail(userEmail).orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
@@ -127,5 +119,19 @@ public class AuthenticationService {
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
     }
+  }
+
+  private static String getRefreshToken(HttpServletRequest request) {
+    String refreshToken = null;
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("refreshToken".equals(cookie.getName())) {
+          refreshToken = cookie.getValue();
+          break;
+        }
+      }
+    }
+    return refreshToken;
   }
 }
