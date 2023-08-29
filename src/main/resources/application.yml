@@ -19,10 +19,10 @@ application:
       refresh-token:
         expiration: 60000 # 1 min
 
-server:
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-password: ah64apache
-    key-store-type: PKCS12
-    key-alias: stockbackend
-  port: 5050
+#server:
+#  ssl:
+#    key-store: classpath:keystore.p12
+#    key-store-password: ah64apache
+#    key-store-type: PKCS12
+#    key-alias: stockbackend
+#  port: 5050

@@ -42,7 +42,7 @@ public class SecurityConfiguration {
         .cors(Customizer.withDefaults())
         .csrf()
         .disable()
-        .requiresChannel().requestMatchers("/api/v1/auth/**").requiresSecure().and()
+        //.requiresChannel().requestMatchers("/api/v1/auth/**").requiresSecure().and()
         .authorizeHttpRequests()
         .requestMatchers(PathRequest.toH2Console()).permitAll()
         .requestMatchers(
@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                 "/h2-console",
                 "/user/data",
                 "/user/data/**",
+                "/api/v1/auth/**",
                 "/h2-console/**",
                 "/v2/api-docs",
                 "/v3/api-docs",
