@@ -103,11 +103,11 @@ public class AuthService {
     tokenRepo.saveAll(validUserTokens);
   }
 
-  public AuthResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     String refreshToken = getRefreshToken(request);
     if(refreshToken == null) {
-      return null;
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     final String userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
@@ -116,13 +116,13 @@ public class AuthService {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
-        return AuthResponse.builder()
+        return new ResponseEntity<AuthResponse>(AuthResponse.builder()
                 .accessToken(accessToken)
-                .build();
+                .build(), HttpStatus.CREATED);
         //new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
     }
-    return null;
+    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
   }
 
   private static String getRefreshToken(HttpServletRequest request) {
