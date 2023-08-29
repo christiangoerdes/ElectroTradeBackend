@@ -119,7 +119,6 @@ public class AuthService {
         return new ResponseEntity<AuthResponse>(AuthResponse.builder()
                 .accessToken(accessToken)
                 .build(), HttpStatus.CREATED);
-        //new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
     }
     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
