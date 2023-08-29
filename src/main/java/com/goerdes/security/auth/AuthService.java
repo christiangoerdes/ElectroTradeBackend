@@ -103,11 +103,11 @@ public class AuthService {
     tokenRepo.saveAll(validUserTokens);
   }
 
-  public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  public AuthResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     String refreshToken = getRefreshToken(request);
     if(refreshToken == null) {
-      return;
+      return null;
     }
     final String userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
@@ -116,12 +116,13 @@ public class AuthService {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
-        var authResponse = AuthResponse.builder()
+        return AuthResponse.builder()
                 .accessToken(accessToken)
                 .build();
-        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+        //new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
     }
+    return null;
   }
 
   private static String getRefreshToken(HttpServletRequest request) {

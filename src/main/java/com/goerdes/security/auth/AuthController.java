@@ -4,6 +4,7 @@ import com.goerdes.security.user.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,12 +32,11 @@ public class AuthController {
   }
 
   @PostMapping("/refresh-token")
-  public void refreshToken(
+  public ResponseEntity<AuthResponse> refreshToken(
       HttpServletRequest request,
       HttpServletResponse response
   ) throws IOException {
-    System.out.println("Token refresh");
-    service.refreshToken(request, response);
+    return new ResponseEntity<>(service.refreshToken(request, response), HttpStatus.CREATED);
   }
 
 
