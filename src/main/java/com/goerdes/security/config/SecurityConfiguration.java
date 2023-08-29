@@ -1,5 +1,6 @@
 package com.goerdes.security.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -39,10 +40,14 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
+        .exceptionHandling()
+        .authenticationEntryPoint((request, response, authException) -> {
+          response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unauthorized");
+        })
+        .and()
         .cors(Customizer.withDefaults())
         .csrf()
         .disable()
-        //.requiresChannel().requestMatchers("/api/v1/auth/**").requiresSecure().and()
         .authorizeHttpRequests()
         .requestMatchers(PathRequest.toH2Console()).permitAll()
         .requestMatchers(
