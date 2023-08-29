@@ -35,6 +35,7 @@ public class AuthController {
       HttpServletRequest request,
       HttpServletResponse response
   ) throws IOException {
+    System.out.println("Token refresh");
     service.refreshToken(request, response);
   }
 
