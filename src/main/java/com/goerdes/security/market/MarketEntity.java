@@ -1,13 +1,16 @@
 package com.goerdes.security.market;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Data
 @Builder
@@ -20,4 +23,9 @@ public class MarketEntity {
     @Id
     @GeneratedValue
     private Integer id;
+
+    private String name;
+
+    @ElementCollection
+    private Set<Double> priceHistory;
 }
