@@ -1,6 +1,7 @@
 package com.goerdes.security.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.goerdes.security.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +21,7 @@ public class AuthResponse {
 
   @JsonProperty("balance")
   private Double balance;
+
+  @JsonProperty("role")
+  private Role role;
 }
