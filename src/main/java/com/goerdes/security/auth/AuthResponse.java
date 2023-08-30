@@ -17,4 +17,7 @@ public class AuthResponse {
 
   @JsonProperty("name")
   private String name;
+
+  @JsonProperty("balance")
+  private Double balance;
 }
