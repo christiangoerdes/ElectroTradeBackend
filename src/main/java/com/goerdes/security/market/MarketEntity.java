@@ -27,5 +27,5 @@ public class MarketEntity {
     private String name;
 
     @ElementCollection
-    private Set<Double> priceHistory;
+    private List<Double> priceHistory;
 }
