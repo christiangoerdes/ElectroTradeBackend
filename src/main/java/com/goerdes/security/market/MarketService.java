@@ -15,4 +15,8 @@ public class MarketService {
     public void createMarketEntity(String name, List<Double> priceHistory) {
         marketRepo.save(MarketEntity.builder().name(name).priceHistory(priceHistory).build());
     }
+
+    public StockList getAllStocks() {
+        return StockList.builder().stocks(marketRepo.findAll()).build();
+    }
 }

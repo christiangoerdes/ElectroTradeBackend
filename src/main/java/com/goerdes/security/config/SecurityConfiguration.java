@@ -53,7 +53,8 @@ public class SecurityConfiguration {
         .requestMatchers(
                 "/user/data/**",
                 "/auth/**",
-                "/h2-console/**"
+                "/h2-console/**",
+                "/market/data"
         )
         .permitAll()
         .requestMatchers("/user/data/**").hasAnyRole(USER.name())
