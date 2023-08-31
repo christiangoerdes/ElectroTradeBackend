@@ -7,14 +7,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.goerdes.security.user.Role.ADMIN;
 import static com.goerdes.security.user.Role.MANAGER;
 
 @SpringBootApplication
+@EnableScheduling
 public class SecurityApplication {
 
 	public static void main(String[] args) {

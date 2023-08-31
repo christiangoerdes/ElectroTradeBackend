@@ -1,13 +1,13 @@
 package com.goerdes.security.market;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +35,10 @@ public class MarketService {
         }
 
         return formattedDates;
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    private void updateAllEntities() {
+        // TODO
     }
 }
