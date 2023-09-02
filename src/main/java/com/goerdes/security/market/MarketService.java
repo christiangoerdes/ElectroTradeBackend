@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,12 +34,17 @@ public class MarketService {
             formattedDates.add(currentDate.format(dateFormatter).replace(".", ""));
             currentDate = currentDate.minusDays(1);
         }
-
+        Collections.reverse(formattedDates);
         return formattedDates;
     }
 
     @Scheduled(cron = "0 0 * * * *")
     private void updateAllEntities() {
-        // TODO
+        List<MarketEntity> marketEntities = marketRepo.findAll();
+
+        for (MarketEntity entity : marketEntities) {
+            entity.updatePriceHistory();
+        }
+        marketRepo.saveAll(marketEntities);
     }
 }

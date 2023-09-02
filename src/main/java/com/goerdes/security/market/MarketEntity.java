@@ -24,4 +24,8 @@ public class MarketEntity {
 
     @ElementCollection
     private List<Double> priceHistory;
+
+    public void updatePriceHistory() {
+
+    }
 }
