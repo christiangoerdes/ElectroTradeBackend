@@ -21,6 +21,7 @@ public class MarketService {
     }
 
     public StockList getAllStocks() {
+        updateAllEntities();
         return StockList.builder().stocks(marketRepo.findAll()).timestamps(getLast30DaysFormatted()).build();
     }
 
