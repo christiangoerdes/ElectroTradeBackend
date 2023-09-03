@@ -7,7 +7,6 @@ import com.goerdes.security.token.TokenType;
 import com.goerdes.security.user.Role;
 import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
