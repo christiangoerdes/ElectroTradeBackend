@@ -32,7 +32,7 @@ public class MarketEntity {
         Double lastValue = priceHistory.get(priceHistory.size() -1 );
         double percentageChange = (random.nextDouble() - 0.5) * 0.10;
         Double newValue = lastValue * (1 + percentageChange);
-        double randomInt = (random.nextInt(9) - 4)* 0.1 * newValue;
+        double randomInt = (random.nextInt(9) - 3)* 0.1 * newValue;
         newValue += randomInt;
         priceHistory.add(Math.round(newValue * 100.0) / 100.0);
     }
