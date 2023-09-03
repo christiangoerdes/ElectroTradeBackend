@@ -49,27 +49,42 @@ public class UserEntity implements UserDetails {
     transactions.add(transaction);
   }
 
-  public void buyStock(MarketEntity market, int quantity) {
-    stockQuantityMap.put(market, quantity);
+  public void buyStock(MarketEntity stock, int quantity) {
+    double stockPrice = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1);
+    if(quantity >= 1 && balance >= stockPrice*quantity) {
+      transactions.add(
+              TransactionEntity.builder()
+                      .user(this)
+                      .market(stock)
+                      .price(stockPrice)
+                      .quantity(quantity)
+                      .timestamp(LocalDateTime.now())
+                      .build()
+      );
+      stockQuantityMap.put(stock, quantity);
+      balance -= stockPrice*quantity;
+    } else {
+    throw new IllegalArgumentException("Not enough quantity to sell");
+    }
   }
 
-  public void sellMarket(MarketEntity stock, int quantity) {
+  public void sellStock(MarketEntity stock, int quantity) {
     if (stockQuantityMap.containsKey(stock) && stockQuantityMap.get(stock) >= quantity) {
       double stockPrice = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1);
-      double saleValue = quantity * stockPrice;
-
+      transactions.add(
+              TransactionEntity.builder()
+                      .user(this)
+                      .market(stock)
+                      .price(stockPrice)
+                      .quantity(quantity * -1)
+                      .timestamp(LocalDateTime.now())
+                      .build()
+      );
       stockQuantityMap.put(stock, stockQuantityMap.get(stock) - quantity);
-
-      TransactionEntity saleTransaction = TransactionEntity.builder()
-              .user(this)
-              .market(stock)
-              .price(stockPrice)
-              .quantity(quantity * -1)
-              .timestamp(LocalDateTime.now())
-              .build();
-      transactions.add(saleTransaction);
-      setBalance(getBalance() + saleValue);
-      System.out.println("asdasdadsad");
+      if(stockQuantityMap.get(stock) == 0) {
+        stockQuantityMap.remove(stock);
+      }
+      balance += quantity * stockPrice;
     } else {
       throw new IllegalArgumentException("Not enough quantity to sell");
     }

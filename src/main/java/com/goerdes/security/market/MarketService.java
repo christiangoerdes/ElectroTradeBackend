@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,23 +63,10 @@ public class MarketService {
         MarketEntity stock;
         try {
             stock = marketRepo.findById(marketId).orElseThrow();
+            user.buyStock(stock, quantity);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        double stockPrice = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1);
-        if(quantity < 1 || user.getBalance() < stockPrice*quantity) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        user.addTransaction(
-                TransactionEntity.builder()
-                        .user(user)
-                        .market(stock)
-                        .price(stockPrice)
-                        .quantity(quantity)
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-        user.buyStock(stock,quantity);
         userRepo.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -90,7 +76,7 @@ public class MarketService {
         MarketEntity stock;
         try {
             stock = marketRepo.findById(marketId).orElseThrow();
-            user.sellMarket(stock, quantity);
+            user.sellStock(stock, quantity);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
