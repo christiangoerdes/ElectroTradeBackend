@@ -80,10 +80,24 @@ public class MarketService {
                         .timestamp(LocalDateTime.now())
                         .build()
         );
-        user.addMarketQuantity(stock,quantity);
+        user.buyStock(stock,quantity);
         userRepo.save(user);
-        return ResponseEntity.ok("ok");
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    public ResponseEntity<String> sell(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
+        UserEntity user = extractUser(request);
+        MarketEntity stock;
+        try {
+            stock = marketRepo.findById(marketId).orElseThrow();
+            user.sellMarket(stock, quantity);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        userRepo.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     private UserEntity extractUser(HttpServletRequest request) throws AuthenticationException {
         return userRepo.findByEmail(jwtService.extractUsername(extractJWT(request))).orElseThrow();

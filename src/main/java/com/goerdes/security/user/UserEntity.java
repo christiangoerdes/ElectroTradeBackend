@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
@@ -39,7 +40,7 @@ public class UserEntity implements UserDetails {
   @CollectionTable(name = "user_market_mapping", joinColumns = @JoinColumn(name = "user_id"))
   @MapKeyJoinColumn(name = "market_id")
   @Column(name = "quantity")
-  private Map<MarketEntity, Integer> marketQuantityMap = new HashMap<>();
+  private Map<MarketEntity, Integer> stockQuantityMap = new HashMap<>();
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<TransactionEntity> transactions = new ArrayList<>();
@@ -48,13 +49,32 @@ public class UserEntity implements UserDetails {
     transactions.add(transaction);
   }
 
-  public void addMarketQuantity(MarketEntity market, int quantity) {
-    marketQuantityMap.put(market, quantity);
+  public void buyStock(MarketEntity market, int quantity) {
+    stockQuantityMap.put(market, quantity);
   }
 
-  public void removeMarketQuantity(MarketEntity market) {
-    marketQuantityMap.remove(market);
+  public void sellMarket(MarketEntity stock, int quantity) {
+    if (stockQuantityMap.containsKey(stock) && stockQuantityMap.get(stock) >= quantity) {
+      double stockPrice = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1);
+      double saleValue = quantity * stockPrice;
+
+      stockQuantityMap.put(stock, stockQuantityMap.get(stock) - quantity);
+
+      TransactionEntity saleTransaction = TransactionEntity.builder()
+              .user(this)
+              .market(stock)
+              .price(stockPrice)
+              .quantity(quantity * -1)
+              .timestamp(LocalDateTime.now())
+              .build();
+      transactions.add(saleTransaction);
+      setBalance(getBalance() + saleValue);
+      System.out.println("asdasdadsad");
+    } else {
+      throw new IllegalArgumentException("Not enough quantity to sell");
+    }
   }
+
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
