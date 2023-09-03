@@ -1,21 +1,17 @@
 package com.goerdes.security.user;
 
+import com.goerdes.security.market.MarketEntity;
+import com.goerdes.security.market.TransactionEntity;
 import com.goerdes.security.token.Token;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.Collection;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.*;
 
 @Data
 @Builder
@@ -38,6 +34,28 @@ public class UserEntity implements UserDetails {
 
   @OneToMany(mappedBy = "userEntity")
   private List<Token> tokens;
+
+
+  @ElementCollection
+  @CollectionTable(name = "user_market_mapping", joinColumns = @JoinColumn(name = "user_id"))
+  @MapKeyJoinColumn(name = "market_id")
+  @Column(name = "quantity")
+  private Map<MarketEntity, Integer> marketQuantityMap = new HashMap<>();
+
+  @OneToMany(mappedBy = "user")
+  private List<TransactionEntity> transactions = new ArrayList<>();
+
+  public void addTransaction(TransactionEntity transaction) {
+    transactions.add(transaction);
+  }
+
+  public void addMarketQuantity(MarketEntity market, int quantity) {
+    marketQuantityMap.put(market, quantity);
+  }
+
+  public void removeMarketQuantity(MarketEntity market) {
+    marketQuantityMap.remove(market);
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
