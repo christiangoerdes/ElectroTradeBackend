@@ -5,6 +5,7 @@ import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,12 @@ public class MarketService {
     }
 
     public ResponseEntity<String> buy(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
-        System.out.println(extractUser(request).getName());
+        UserEntity user = extractUser(request);
+        try {
+            MarketEntity stock = marketRepo.findById(marketId).orElseThrow();
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return ResponseEntity.ok("ok");
     }
 
