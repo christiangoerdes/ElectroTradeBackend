@@ -35,7 +35,6 @@ public class UserEntity implements UserDetails {
   @OneToMany(mappedBy = "userEntity")
   private List<Token> tokens;
 
-
   @ElementCollection
   @CollectionTable(name = "user_market_mapping", joinColumns = @JoinColumn(name = "user_id"))
   @MapKeyJoinColumn(name = "market_id")

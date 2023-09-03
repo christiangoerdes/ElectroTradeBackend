@@ -20,11 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
-import static com.goerdes.security.user.Permission.*;
-import static com.goerdes.security.user.Role.*;
-import static org.springframework.http.HttpMethod.*;
+import static com.goerdes.security.user.Role.USER;
 
 @Configuration
 @EnableWebSecurity
@@ -51,13 +48,14 @@ public class SecurityConfiguration {
         .authorizeHttpRequests()
         .requestMatchers(PathRequest.toH2Console()).permitAll()
         .requestMatchers(
-                "/user/data/**",
+            //    "/user/data/**",
                 "/auth/**",
                 "/h2-console/**",
                 "/market/data"
         )
         .permitAll()
         .requestMatchers("/user/data/**").hasAnyRole(USER.name())
+        .requestMatchers("/user/buy/**").hasAnyRole(USER.name())
 
        /* .requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name())
 
