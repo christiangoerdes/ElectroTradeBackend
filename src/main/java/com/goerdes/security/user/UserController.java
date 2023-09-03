@@ -38,4 +38,11 @@ public class UserController {
             @RequestParam("quantity") int quantity) throws AuthenticationException {
         return marketService.sell(request, marketId, quantity);
     }
+
+    @GetMapping("/info/{marketId}")
+    public ResponseEntity<Integer> getStockNumbers(
+            HttpServletRequest request,
+            @PathVariable("marketId") Integer marketId) throws AuthenticationException {
+        return marketService.getStockNumbers(request, marketId);
+    }
 }

@@ -61,7 +61,11 @@ public class UserEntity implements UserDetails {
                       .timestamp(LocalDateTime.now())
                       .build()
       );
-      stockQuantityMap.put(stock, quantity);
+      if(stockQuantityMap.containsKey(stock)) {
+        stockQuantityMap.put(stock, stockQuantityMap.get(stock) + quantity);
+      } else {
+        stockQuantityMap.put(stock, quantity);
+      }
       balance -= stockPrice*quantity;
     } else {
     throw new IllegalArgumentException("Not enough quantity to sell");

@@ -97,4 +97,15 @@ public class MarketService {
             throw new AuthenticationException();
         }
     }
+
+    public ResponseEntity<Integer> getStockNumbers(HttpServletRequest request, Integer marketId) throws AuthenticationException {
+        UserEntity user = extractUser(request);
+        MarketEntity stock;
+        try {
+            stock = marketRepo.findById(marketId).orElseThrow();
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(user.getStockQuantityMap().get(stock), HttpStatus.OK);
+    }
 }
