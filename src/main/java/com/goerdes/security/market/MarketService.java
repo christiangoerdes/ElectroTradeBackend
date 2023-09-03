@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -106,6 +107,8 @@ public class MarketService {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(user.getStockQuantityMap().get(stock), HttpStatus.OK);
+        Integer quantity = Optional.ofNullable(user.getStockQuantityMap().get(stock)).orElse(0);
+        return new ResponseEntity<>(quantity, HttpStatus.OK);
+
     }
 }
