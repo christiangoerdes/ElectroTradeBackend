@@ -41,7 +41,7 @@ public class UserEntity implements UserDetails {
   @Column(name = "quantity")
   private Map<MarketEntity, Integer> marketQuantityMap = new HashMap<>();
 
-  @OneToMany(mappedBy = "user")
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<TransactionEntity> transactions = new ArrayList<>();
 
   public void addTransaction(TransactionEntity transaction) {

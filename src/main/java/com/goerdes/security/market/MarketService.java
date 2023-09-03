@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,11 +61,27 @@ public class MarketService {
 
     public ResponseEntity<String> buy(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
         UserEntity user = extractUser(request);
+        MarketEntity stock;
         try {
-            MarketEntity stock = marketRepo.findById(marketId).orElseThrow();
+            stock = marketRepo.findById(marketId).orElseThrow();
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        double stockPrice = stock.getPriceHistory().get(stock.getPriceHistory().size() - 1);
+        if(quantity < 1 || user.getBalance() < stockPrice*quantity) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        user.addTransaction(
+                TransactionEntity.builder()
+                        .user(user)
+                        .market(stock)
+                        .price(stockPrice)
+                        .quantity(quantity)
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+        user.addMarketQuantity(stock,quantity);
+        userRepo.save(user);
         return ResponseEntity.ok("ok");
     }
 
