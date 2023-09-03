@@ -74,6 +74,4 @@ public class MarketService {
             throw new AuthenticationException();
         }
     }
-
-
 }
