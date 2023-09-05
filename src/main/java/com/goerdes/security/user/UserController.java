@@ -24,21 +24,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/buy/{marketId}")
-    public ResponseEntity<TransactionResponse> buyStock(
-            HttpServletRequest request,
-            @PathVariable("marketId") Integer marketId,
-            @RequestParam("quantity") int quantity) throws AuthenticationException {
-        return marketService.buy(request, marketId, quantity);
-    }
 
-    @PostMapping("/sell/{marketId}")
-    public ResponseEntity<TransactionResponse> sellStock(
-            HttpServletRequest request,
-            @PathVariable("marketId") Integer marketId,
-            @RequestParam("quantity") int quantity) throws AuthenticationException {
-        return marketService.sell(request, marketId, quantity);
-    }
 
     @GetMapping("/info/{marketId}")
     public ResponseEntity<Integer> getStockNumbersForId(HttpServletRequest request, @PathVariable("marketId") Integer marketId) throws AuthenticationException {
