@@ -1,6 +1,7 @@
 package com.goerdes.security.user;
 
 import com.goerdes.security.market.MarketService;
+import com.goerdes.security.market.TransactionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class UserController {
 
 
     @PostMapping("/buy/{marketId}")
-    public ResponseEntity<Double> buyStock(
+    public ResponseEntity<TransactionResponse> buyStock(
             HttpServletRequest request,
             @PathVariable("marketId") Integer marketId,
             @RequestParam("quantity") int quantity) throws AuthenticationException {
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/sell/{marketId}")
-    public ResponseEntity<Double> sellStock(
+    public ResponseEntity<TransactionResponse> sellStock(
             HttpServletRequest request,
             @PathVariable("marketId") Integer marketId,
             @RequestParam("quantity") int quantity) throws AuthenticationException {
