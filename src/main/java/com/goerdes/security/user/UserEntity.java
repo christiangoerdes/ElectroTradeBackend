@@ -67,6 +67,7 @@ public class UserEntity implements UserDetails {
         stockQuantityMap.put(stock, quantity);
       }
       balance -= stockPrice*quantity;
+      balance = Math.round(balance * 100.0) / 100.0;
     } else {
     throw new IllegalArgumentException("Not enough quantity to sell");
     }
@@ -89,6 +90,7 @@ public class UserEntity implements UserDetails {
         stockQuantityMap.remove(stock);
       }
       balance += quantity * stockPrice;
+      balance = Math.round(balance * 100.0) / 100.0;
     } else {
       throw new IllegalArgumentException("Not enough quantity to sell");
     }
