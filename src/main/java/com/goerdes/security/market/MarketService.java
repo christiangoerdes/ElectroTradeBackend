@@ -59,7 +59,7 @@ public class MarketService {
         marketRepo.saveAll(marketEntities);
     }
 
-    public ResponseEntity<String> buy(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
+    public ResponseEntity<Double> buy(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
         UserEntity user = extractUser(request);
         MarketEntity stock;
         try {
@@ -69,10 +69,10 @@ public class MarketService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         userRepo.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(user.getBalance(), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> sell(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
+    public ResponseEntity<Double> sell(HttpServletRequest request, Integer marketId, int quantity) throws AuthenticationException {
         UserEntity user = extractUser(request);
         MarketEntity stock;
         try {
@@ -82,7 +82,7 @@ public class MarketService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         userRepo.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(user.getBalance(), HttpStatus.OK);
     }
 
 
