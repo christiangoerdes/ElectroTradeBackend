@@ -40,9 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/info/{marketId}")
-    public ResponseEntity<Integer> getStockNumbers(
-            HttpServletRequest request,
-            @PathVariable("marketId") Integer marketId) throws AuthenticationException {
-        return marketService.getStockNumbers(request, marketId);
+    public ResponseEntity<Integer> getStockNumbersForId(HttpServletRequest request, @PathVariable("marketId") Integer marketId) throws AuthenticationException {
+        return marketService.getStockNumbersForId(request, marketId);
     }
 }

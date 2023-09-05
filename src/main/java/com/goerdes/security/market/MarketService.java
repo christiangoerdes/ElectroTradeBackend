@@ -1,5 +1,6 @@
 package com.goerdes.security.market;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goerdes.security.config.JwtService;
 import com.goerdes.security.user.UserEntity;
 import com.goerdes.security.user.UserRepo;
@@ -13,10 +14,8 @@ import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +25,27 @@ public class MarketService {
     private final MarketRepo marketRepo;
     private final JwtService jwtService;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     public void createMarketEntity(String name, List<Double> priceHistory) {
         marketRepo.save(MarketEntity.builder().name(name).priceHistory(priceHistory).build());
     }
 
-    public StockList getAllStocks() {
+    public StockList getAllStocks(HttpServletRequest request) throws AuthenticationException {
         updateAllEntities();
-        return StockList.builder().stocks(marketRepo.findAll()).timestamps(getLast30DaysFormatted()).build();
+        UserEntity user = extractUser(request);
+
+        List<MarketEntity> stockEntities = marketRepo.findAll();
+        Map<MarketEntity, Integer> ownedStocks = user.getStockQuantityMap();
+        List<MarketEntityResponse> stocks = stockEntities.stream()
+                .map(marketEntity -> {
+                    MarketEntityResponse response = objectMapper.convertValue(marketEntity, MarketEntityResponse.class);
+                    response.setQuantity(ownedStocks.getOrDefault(marketEntity, 0));
+                    return response;
+                })
+                .collect(Collectors.toList());
+
+        return StockList.builder().stocks(stocks).timestamps(getLast30DaysFormatted()).build();
     }
 
     private static List<String> getLast30DaysFormatted() {
@@ -99,7 +112,7 @@ public class MarketService {
         }
     }
 
-    public ResponseEntity<Integer> getStockNumbers(HttpServletRequest request, Integer marketId) throws AuthenticationException {
+    public ResponseEntity<Integer> getStockNumbersForId(HttpServletRequest request, Integer marketId) throws AuthenticationException {
         UserEntity user = extractUser(request);
         MarketEntity stock;
         try {

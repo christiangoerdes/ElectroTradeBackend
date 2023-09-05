@@ -12,7 +12,7 @@ import java.util.List;
 public class StockList {
 
     @JsonProperty("stocks")
-    private List<MarketEntity> stocks;
+    private List<MarketEntityResponse> stocks;
 
     @JsonProperty("timestamps")
     private List<String> timestamps;
