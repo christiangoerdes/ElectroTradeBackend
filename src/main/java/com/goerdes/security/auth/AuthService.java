@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 
+import static com.goerdes.security.token.TokenType.BEARER;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -38,10 +40,13 @@ public class AuthService {
     if(userRepo.findByEmail(request.getEmail()).isPresent()) {
       throw new EntityExistsException();
     }
-    saveUserToken(userRepo.save(user), jwtToken);
+    String refreshToken =  jwtService.generateRefreshToken(user);
+    UserEntity userEntity = userRepo.save(user);
+    saveUserToken(userEntity, jwtToken);
+    saveRefreshToken(userEntity, refreshToken);
 
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
+    responseHeaders.add("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/");
 
     return new ResponseEntity<>(
             AuthResponse.builder().accessToken(jwtToken).name(user.getName()).balance(user.getBalance()).role(user.getRole()).build(),
@@ -67,13 +72,16 @@ public class AuthService {
         )
     );
     var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
-    var jwtToken = jwtService.generateToken(user);
+    String refreshToken =  jwtService.generateRefreshToken(user);
+    String jwtToken = jwtService.generateToken(user);
+    saveUserToken(user, jwtToken);
+    saveRefreshToken(user, refreshToken);
 
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
 
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.add("Set-Cookie", "refreshToken=" + jwtService.generateRefreshToken(user) + "; HttpOnly; Path=/");
+    responseHeaders.add("Set-Cookie", "refreshToken=" + refreshToken + "; HttpOnly; Path=/");
 
     return new ResponseEntity<>(
             AuthResponse.builder().accessToken(jwtToken).name(user.getName()).balance(user.getBalance()).role(user.getRole()).build(),
@@ -83,13 +91,24 @@ public class AuthService {
   }
 
   private void saveUserToken(UserEntity userEntity, String jwtToken) {
-    var token = Token.builder()
+    Token token = Token.builder()
         .userEntity(userEntity)
         .token(jwtToken)
-        .tokenType(TokenType.BEARER)
+        .tokenType(BEARER)
         .expired(false)
         .revoked(false)
         .build();
+    tokenRepo.save(token);
+  }
+
+  private void saveRefreshToken(UserEntity userEntity, String jwtToken) {
+    Token token = Token.builder()
+            .userEntity(userEntity)
+            .token(jwtToken)
+            .tokenType(TokenType.REFRESH)
+            .expired(false)
+            .revoked(false)
+            .build();
     tokenRepo.save(token);
   }
 
@@ -98,8 +117,10 @@ public class AuthService {
     if (validUserTokens.isEmpty())
       return;
     validUserTokens.forEach(token -> {
-      token.setExpired(true);
-      token.setRevoked(true);
+      if (BEARER.equals(token.getTokenType())) {
+        token.setExpired(true);
+        token.setRevoked(true);
+      }
     });
     tokenRepo.saveAll(validUserTokens);
   }
