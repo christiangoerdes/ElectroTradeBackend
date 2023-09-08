@@ -78,7 +78,7 @@ public class SecurityApplication {
 			double previousPrice = i > 0 ? priceHistory.get(i - 1) : 100.0;
 			double newPrice = previousPrice + (priceChange ? priceChangeAmount : -priceChangeAmount);
 
-			priceHistory.add(newPrice);
+			priceHistory.add(Math.round(newPrice * 100.0) / 100.0);
 		}
 		Collections.shuffle(priceHistory);
 		return priceHistory;
