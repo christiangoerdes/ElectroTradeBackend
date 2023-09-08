@@ -1,5 +1,9 @@
 package com.goerdes.security.config;
 
+import com.goerdes.security.token.TokenRepo;
+import com.goerdes.security.user.UserEntity;
+import com.goerdes.security.user.UserRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -19,6 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.naming.AuthenticationException;
 import java.util.Arrays;
 
 import static com.goerdes.security.user.Role.USER;
@@ -32,7 +37,9 @@ public class SecurityConfiguration {
   private final JwtAuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
   private final LogoutHandler logoutHandler;
-
+  private final JwtService jwtService;
+  private final UserRepo userRepo;
+  private final TokenRepo tokenRepo;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -74,9 +81,16 @@ public class SecurityConfiguration {
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .logout()
-        .logoutUrl("/api/v1/auth/logout")
+        .logoutUrl("/auth/logout")
         .addLogoutHandler(logoutHandler)
-        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+        .logoutSuccessHandler((request, response, authentication) -> {
+          try {
+            revokeAllUserTokens(extractUser(request));
+          } catch (AuthenticationException e) {
+            throw new RuntimeException(e);
+          }
+          SecurityContextHolder.clearContext();
+        })
         .and()
         .headers().frameOptions().disable()
     ;
@@ -96,4 +110,28 @@ public class SecurityConfiguration {
     return source;
   }
 
+  //TODO clean up/optimize code
+
+  private UserEntity extractUser(HttpServletRequest request) throws AuthenticationException {
+    return userRepo.findByEmail(jwtService.extractUsername(extractJWT(request))).orElseThrow();
+  }
+
+  private String extractJWT(HttpServletRequest request) throws AuthenticationException {
+    String authorizationHeader = request.getHeader("Authorization");
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      return authorizationHeader.substring(7);
+    } else {
+      throw new AuthenticationException();
+    }
+  }
+  private void revokeAllUserTokens(UserEntity userEntity) {
+    var validUserTokens = tokenRepo.findAllValidTokenByUser(userEntity.getId());
+    if (validUserTokens.isEmpty())
+      return;
+    validUserTokens.forEach(token -> {
+      token.setExpired(true);
+      token.setRevoked(true);
+    });
+    tokenRepo.saveAll(validUserTokens);
+  }
 }

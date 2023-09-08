@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 
 @Service
@@ -136,5 +137,23 @@ public class AuthService {
       }
     }
     return refreshToken;
+  }
+
+  public void invalidateToken(HttpServletRequest request) throws AuthenticationException {
+    UserEntity user = extractUser(request);
+    revokeAllUserTokens(user);
+  }
+
+  private UserEntity extractUser(HttpServletRequest request) throws AuthenticationException {
+    return userRepo.findByEmail(jwtService.extractUsername(extractJWT(request))).orElseThrow();
+  }
+
+  private String extractJWT(HttpServletRequest request) throws AuthenticationException {
+    String authorizationHeader = request.getHeader("Authorization");
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      return authorizationHeader.substring(7);
+    } else {
+      throw new AuthenticationException();
+    }
   }
 }
