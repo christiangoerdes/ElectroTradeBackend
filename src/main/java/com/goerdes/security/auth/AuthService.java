@@ -128,7 +128,7 @@ public class AuthService {
   public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     String refreshToken = getRefreshToken(request);
-    if(refreshToken == null) {
+    if(refreshToken == null ||tokenRepo.existsByTokenAndRevoked(refreshToken, true)) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     final String userEmail = jwtService.extractUsername(refreshToken);

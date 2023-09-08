@@ -1,9 +1,10 @@
 package com.goerdes.security.token;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface TokenRepo extends JpaRepository<Token, Integer> {
 
@@ -15,4 +16,6 @@ public interface TokenRepo extends JpaRepository<Token, Integer> {
   List<Token> findAllValidTokenByUser(Integer id);
 
   Optional<Token> findByToken(String token);
+
+  boolean existsByTokenAndRevoked(String refreshToken, boolean revoked);
 }
