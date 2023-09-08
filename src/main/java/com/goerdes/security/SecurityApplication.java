@@ -9,7 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import static com.goerdes.security.user.Role.ADMIN;
 import static com.goerdes.security.user.Role.MANAGER;
@@ -42,27 +45,42 @@ public class SecurityApplication {
 					.build();
 			authService.register(manager, MANAGER);
 
-			marketService.createMarketEntity("Demo", List.of(
-							230.0, 150.0, 180.0, 250.0, 120.0, 280.0, 190.0, 200.0, 220.0, 170.0,
-					210.0, 290.0, 130.0, 240.0, 270.0, 160.0, 300.0, 110.0, 280.0, 170.0,
-					250.0, 220.0, 190.0, 140.0, 200.0, 270.0, 150.0, 210.0, 260.0, 120.0
-			));
-
-			marketService.createMarketEntity("Market 1", List.of(
-					100.0, 105.0, 110.0, 115.0, 120.0, 125.0, 130.0, 135.0, 140.0, 145.0,
-					150.0, 155.0, 160.0, 165.0, 170.0, 175.0, 180.0, 185.0, 190.0, 195.0
-			));
-
-			marketService.createMarketEntity("Market 2", List.of(
-					50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0,
-					100.0, 105.0, 110.0, 115.0, 120.0, 125.0, 130.0, 135.0, 140.0, 145.0
-			));
-
-			marketService.createMarketEntity("Market 3", List.of(
-					200.0, 205.0, 210.0, 215.0, 220.0, 225.0, 230.0, 235.0, 240.0, 245.0,
-					250.0, 255.0, 260.0, 265.0, 270.0, 275.0, 280.0, 285.0, 290.0, 295.0
-			));
+			createMarketWithRandomPrices(authService, marketService, "Stock 1");
+			createMarketWithRandomPrices(authService, marketService, "Stock 2");
+			createMarketWithRandomPrices(authService, marketService, "Stock 3");
+			createMarketWithRandomPrices(authService, marketService, "Stock 4");
+			createMarketWithRandomPrices(authService, marketService, "Stock 5");
+			createMarketWithRandomPrices(authService, marketService, "Stock 6");
+			createMarketWithRandomPrices(authService, marketService, "Stock 7");
+			createMarketWithRandomPrices(authService, marketService, "Stock 8");
+			createMarketWithRandomPrices(authService, marketService, "Stock 9");
 
 		};
+	}
+	private void createMarketWithRandomPrices(
+			AuthService authService,
+			MarketService marketService,
+			String stockName
+	) {
+		List<Double> priceHistory = generateRandomPriceHistory();
+		marketService.createMarketEntity(stockName, priceHistory);
+	}
+
+	private List<Double> generateRandomPriceHistory() {
+		List<Double> priceHistory = new ArrayList<>();
+		Random random = new Random();
+
+		for (int i = 0; i < 30; i++) {
+			boolean priceChange = random.nextBoolean();
+
+			double priceChangeAmount = (random.nextDouble() - 0.5) * 20;
+
+			double previousPrice = i > 0 ? priceHistory.get(i - 1) : 100.0;
+			double newPrice = previousPrice + (priceChange ? priceChangeAmount : -priceChangeAmount);
+
+			priceHistory.add(newPrice);
+		}
+		Collections.shuffle(priceHistory);
+		return priceHistory;
 	}
 }
