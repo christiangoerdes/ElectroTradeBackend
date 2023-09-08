@@ -54,6 +54,7 @@ public class SecurityApplication {
 			createMarketWithRandomPrices(authService, marketService, "Stock 7");
 			createMarketWithRandomPrices(authService, marketService, "Stock 8");
 			createMarketWithRandomPrices(authService, marketService, "Stock 9");
+			createMarketWithRandomPrices(authService, marketService, "Stock 10");
 
 		};
 	}
