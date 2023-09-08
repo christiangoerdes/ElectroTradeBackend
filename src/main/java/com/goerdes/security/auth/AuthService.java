@@ -74,7 +74,6 @@ public class AuthService {
     var user = userRepo.findByEmail(request.getEmail()).orElseThrow();
     String refreshToken =  jwtService.generateRefreshToken(user);
     String jwtToken = jwtService.generateToken(user);
-    saveUserToken(user, jwtToken);
     saveRefreshToken(user, refreshToken);
 
     revokeAllUserTokens(user);
