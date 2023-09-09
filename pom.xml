@@ -8,11 +8,11 @@
 		<version>3.0.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.goerdes</groupId>
+	<groupId>com.electrotrade</groupId>
 	<artifactId>security</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>security</name>
-	<description>Demo project for Spring Boot</description>
+	<description>electro-trade backend</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
