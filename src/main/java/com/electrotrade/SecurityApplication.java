@@ -45,16 +45,16 @@ public class SecurityApplication {
 					.build();
 			authService.register(manager, MANAGER);
 
-			createMarketWithRandomPrices(marketService, "Stock 1");
-			createMarketWithRandomPrices(marketService, "Stock 2");
-			createMarketWithRandomPrices(marketService, "Stock 3");
-			createMarketWithRandomPrices(marketService, "Stock 4");
-			createMarketWithRandomPrices(marketService, "Stock 5");
-			createMarketWithRandomPrices(marketService, "Stock 6");
-			createMarketWithRandomPrices(marketService, "Stock 7");
-			createMarketWithRandomPrices(marketService, "Stock 8");
-			createMarketWithRandomPrices(marketService, "Stock 9");
-			createMarketWithRandomPrices(marketService, "Stock 10");
+			createMarketWithRandomPrices(marketService, "StellarTech Inc.");
+			createMarketWithRandomPrices(marketService, "QuantumEnergy Group");
+			createMarketWithRandomPrices(marketService, "BioGen Innovations");
+			createMarketWithRandomPrices(marketService, "CyberSafe Systems");
+			createMarketWithRandomPrices(marketService, "EcoPower Solutions");
+			createMarketWithRandomPrices(marketService, "AeroX Industries");
+			createMarketWithRandomPrices(marketService, "HealthGenix Pharmaceuticals");
+			createMarketWithRandomPrices(marketService, "GreenWave Renewables");
+			createMarketWithRandomPrices(marketService, "DataDynamo Technologies");
+			createMarketWithRandomPrices(marketService, "FinTech Futures Corp.");
 
 		};
 	}
