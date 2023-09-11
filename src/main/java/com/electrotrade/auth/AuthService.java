@@ -7,7 +7,6 @@ import com.electrotrade.token.TokenType;
 import com.electrotrade.user.Role;
 import com.electrotrade.user.UserEntity;
 import com.electrotrade.user.UserRepo;
-import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class AuthService {
     UserEntity user = createUser(request, role);
     var jwtToken = jwtService.generateToken(user);
     if(userRepo.findByEmail(request.getEmail()).isPresent()) {
-      throw new EntityExistsException();
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     String refreshToken =  jwtService.generateRefreshToken(user);
     UserEntity userEntity = userRepo.save(user);
