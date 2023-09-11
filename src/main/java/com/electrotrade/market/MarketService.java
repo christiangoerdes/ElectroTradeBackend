@@ -28,7 +28,11 @@ public class MarketService {
     ObjectMapper objectMapper = new ObjectMapper();
 
     public void createMarketEntity(String name, List<Double> priceHistory) {
-        marketRepo.save(MarketEntity.builder().name(name).priceHistory(priceHistory).build());
+        try {
+            marketRepo.save(MarketEntity.builder().name(name).priceHistory(priceHistory).build());
+        } catch (Exception ignored) {
+            System.out.println(ignored);
+        }
     }
 
     public StockList getAllStocks(HttpServletRequest request) throws AuthenticationException {
