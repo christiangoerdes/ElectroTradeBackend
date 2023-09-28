@@ -23,7 +23,7 @@ Follow these steps to run the Spring Boot backend:
 2. **Navigate to the Backend Directory**: Open your terminal and navigate to the root directory of the backend project.
 
 3. **Set Up the Database**: Make sure you have PostgreSQL installed and running on your system.
-Configure the database connection settings in the application.yml file located in the backend project.
+Configure the database connection settings in the application.yml file located in `src/main/resources`
 
 4. **Run the backend**: Run the backend by using IntelliJ IDEA or Maven 
 
